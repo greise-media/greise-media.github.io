@@ -53,3 +53,20 @@ jobs:
       - name: Publier sur GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+        continue-on-error: true
+      - name: Nouvelle tentative de publication (2e essai)
+        id: deployment2
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 90
+      - name: Publier sur GitHub Pages (2e essai)
+        id: deployment_retry1
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+      - name: Nouvelle tentative de publication (3e essai)
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry1.outcome == 'failure'
+        run: sleep 240
+      - name: Publier sur GitHub Pages (3e essai)
+        id: deployment_retry2
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry1.outcome == 'failure'
+        uses: actions/deploy-pages@v5
